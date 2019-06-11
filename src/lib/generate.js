@@ -13,12 +13,13 @@ import {
   validatePassword,
   validatePasswordInput,
   validatePasswordLength,
+  validateCharset,
 } from './validate';
 
 // Hash the input for the requested number of rounds, then continue hashing
 // until the password policy is satisfied. Finally, pass result to callback.
 function hashRound(input, length, hashFunction, rounds, callback, charset) {
-  if (rounds > 0 || !validatePassword(input, length)) {
+  if (rounds > 0 || !validatePassword(input, length, charset)) {
     process.nextTick(() => {
       hashRound(hashFunction(input, charset), length, hashFunction, rounds - 1, callback, charset);
     });
@@ -46,6 +47,7 @@ function generate(
   const options = Object.assign({}, defaults, userOptions);
 
   validateCallback(callback);
+  validateCharset(options.charset);
   validatePasswordInput(masterPassword);
   validatePasswordInput(options.secret);
   validatePasswordLength(masterPassword + options.secret);
