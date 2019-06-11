@@ -17,10 +17,10 @@ import {
 
 // Hash the input for the requested number of rounds, then continue hashing
 // until the password policy is satisfied. Finally, pass result to callback.
-function hashRound(input, length, hashFunction, rounds, callback) {
+function hashRound(input, length, hashFunction, rounds, callback, charset) {
   if (rounds > 0 || !validatePassword(input, length)) {
     process.nextTick(() => {
-      hashRound(hashFunction(input), length, hashFunction, rounds - 1, callback);
+      hashRound(hashFunction(input, charset), length, hashFunction, rounds - 1, callback, charset);
     });
     return;
   }
@@ -41,6 +41,7 @@ function generate(
     method: 'md5',
     removeSubdomains: true,
     secret: '',
+    charset : [true,true,true,true],
   };
   const options = Object.assign({}, defaults, userOptions);
 
@@ -53,7 +54,7 @@ function generate(
   const domain = hostname(url, options);
   const input = `${masterPassword}${options.secret}:${domain}`;
 
-  hashRound(input, options.length, hash(options.method), options.hashRounds, callback);
+  hashRound(input, options.length, hash(options.method), options.hashRounds, callback, options.charset);
 }
 
 export default generate;
