@@ -5,25 +5,36 @@
  * License: GPLv2
  */
 
-import encBase64 from 'crypto-js/enc-base64';
-import md5 from 'crypto-js/md5';
-import sha512 from 'crypto-js/sha512';
+import ripemd160 from 'crypto-js/ripemd160';
+import sha3 from 'crypto-js/sha3';
 
-// Replace non-alphanumeric and padding characters in the Base-64 alphabet to
-// comply with most password policies.
-function customBase64(str) {
-  return str.replace(/\+/g, '9').replace(/\//g, '8').replace(/=/g, 'A');
-}
 
-// Compute hexadecimal hash and convert it to Base-64.
-function customBase64Hash(str, hashFunction) {
-  const result = hashFunction(str).toString(encBase64);
-  return customBase64(result);
+// Compute hexadecimal hash and convert it to custom Base.
+function customBaseHash(str, hashFunction , charset) {
+  const letters = "abcdefghijklmnopqrstuvwxyz"
+  const caps = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+  const numbers = "0123456789"
+  const spec = "+@-_=$£*?./!:>%"
+  var alphabet = (charset[0]?letters:"")+(charset[1]?caps:"")+(charset[2]?numbers:"")+(charset[3]?spec:"");
+  var n = parseInt(Math.log2(alphabet.length)+1);
+  var resultat = "";  
+  var binaryWord = parseInt(hashFunction(str).toString(),16).toString(2);
+  while(binaryWord.length>n){
+    var x = binaryWord.substring(0,n);
+    x = parseInt(parseInt(x,2).toString(10));
+    if(x<alphabet.length){
+      resultat+=alphabet[x];
+      binaryWord = binaryWord.slice(n);
+    }else{
+      binaryWord = binaryWord.slice(1);
+    }
+  }
+return resultat;
 }
 
 const hashFunctions = {
-  md5: str => customBase64Hash(str, md5),
-  sha512: str => customBase64Hash(str, sha512),
+  ripemd160: (str, charset) => customBaseHash(str, ripemd160, charset),
+  sha3: (str, charset) => customBaseHash(str, sha3, charset),
 };
 
 // Return a hash function for SGP to use.
