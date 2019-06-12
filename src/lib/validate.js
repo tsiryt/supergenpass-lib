@@ -24,7 +24,7 @@ function validatePassword(str, length, charset) {
   // 1. Password must start with a lowercase letter [a-z].
   // 2. Password must contain at least one uppercase letter [A-Z].
   // 3. Password must contain at least one numeral [0-9].
-  const containsWithLowercaseLetter = /[a-z]/;
+  const containsLowercaseLetter = /[a-z]/;
   const containsUppercaseLetter = /[A-Z]/;
   const containsNumeral = /[0-9]/;
   const containsSpecials = /[+@-_=$£*?./!:>%]/;
