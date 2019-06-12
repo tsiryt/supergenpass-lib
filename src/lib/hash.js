@@ -11,10 +11,10 @@ import sha3 from 'crypto-js/sha3';
 
 // Compute hexadecimal hash and convert it to custom Base.
 function customBaseHash(str, hashFunction , charset) {
-  const letters = "abcdefghijklmnopqrstuvwxyz"
-  const caps = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-  const numbers = "0123456789"
-  const spec = "+@-_=$£*?./!:>%"
+  const letters = "abcdefghijklmnopqrstuvwxyz";
+  const caps = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const numbers = "0123456789";
+  const spec = "+@-_=$£*?./!:>%";
   var alphabet = (charset[0]?letters:"")+(charset[1]?caps:"")+(charset[2]?numbers:"")+(charset[3]?spec:"");
   var n = parseInt(Math.log2(alphabet.length)+1);
   var resultat = "";  
