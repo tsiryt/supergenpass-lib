@@ -5,8 +5,8 @@
  * License: GPLv2
  */
 
-import ripemd160 from 'crypto-js/ripemd160';
-import sha3 from 'crypto-js/sha3';
+var ripemd160 = require('crypto-js/ripemd160');
+var sha3 = require('crypto-js/sha3');
 
 
 // Compute hexadecimal hash and convert it to custom Base.
@@ -14,11 +14,15 @@ function customBaseHash(str, hashFunction , charset) {
   const letters = "abcdefghijklmnopqrstuvwxyz";
   const caps = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
   const numbers = "0123456789";
-  const spec = "+@-_=$£*?./!:>%";
+  const spec = "+@-_$£*?./!:>%";
   var alphabet = (charset[0]?letters:"")+(charset[1]?caps:"")+(charset[2]?numbers:"")+(charset[3]?spec:"");
   var n = parseInt(Math.log2(alphabet.length)+1);
   var resultat = "";  
-  var binaryWord = parseInt(hashFunction(str).toString(),16).toString(2);
+  var hashed = hashFunction(str).toString();
+	var binaryWord = "";
+  for (var i =0;i<hashed.length;i++){
+		binaryWord += parseInt(hashed[i],16).toString(2);
+	}
   while(binaryWord.length>n){
     var x = binaryWord.substring(0,n);
     x = parseInt(parseInt(x,2).toString(10));
@@ -33,8 +37,8 @@ return resultat;
 }
 
 const hashFunctions = {
-  ripemd160: (str, charset) => customBaseHash(str, ripemd160, charset),
-  sha3: (str, charset) => customBaseHash(str, sha3, charset),
+  ripemd160: function(str, charset) {return customBaseHash(str, ripemd160, charset);},
+  sha3: function(str, charset) {return customBaseHash(str, sha3, charset);}
 };
 
 // Return a hash function for SGP to use.
@@ -49,7 +53,7 @@ function hash(method) {
     return hashFunctions[method];
   }
 
-  throw new Error(`Could not resolve hash function, received ${typeof method}.`);
+  throw new Error("Could not resolve hash function, received "+typeof method+".");
 }
 
-export default hash;
+module.exports = hash;

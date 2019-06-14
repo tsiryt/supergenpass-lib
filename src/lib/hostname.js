@@ -5,9 +5,9 @@
  * License: GPLv2
  */
 
-import tldList from './tld-list';
-import endsWith from 'babel-runtime/core-js/string/ends-with';
-import find from 'babel-runtime/core-js/array/find';
+var tldList = require('./tld-list.js');
+var endsWith = require('babel-runtime/core-js/string/ends-with');
+var find = require('babel-runtime/core-js/array/find');
 
 // Remove subdomains while respecting a number of secondary ccTLDs.
 function removeSubdomains(hostname) {
@@ -19,7 +19,7 @@ function removeSubdomains(hostname) {
   }
 
   // Try to find a match in the list of ccTLDs.
-  const ccTld = find(tldList, part => endsWith(hostname, `.${part}`));
+  const ccTld = tldList.find(function(part){return hostname.endsWith("."+part);});
   if (ccTld) {
     // Get one extra part from the hostname.
     const partCount = ccTld.split('.').length + 1;
@@ -31,7 +31,7 @@ function removeSubdomains(hostname) {
 }
 
 // Isolate the domain name of a URL.
-function getHostname(url, userOptions = {}) {
+function getHostname(url, userOptions) {
   const defaults = {
     removeSubdomains: true,
   };
@@ -41,7 +41,7 @@ function getHostname(url, userOptions = {}) {
   const domainMatch = url.match(domainRegExp);
 
   if (domainMatch === null) {
-    throw new Error(`URL is invalid: ${url}`);
+    throw new Error("URL is invalid: "+url);
   }
 
   // If the hostname is an IP address, no further processing can be done.
@@ -54,4 +54,4 @@ function getHostname(url, userOptions = {}) {
   return (options.removeSubdomains) ? removeSubdomains(hostname) : hostname;
 }
 
-export default getHostname;
+module.exports = getHostname;

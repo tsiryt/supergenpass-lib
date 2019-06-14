@@ -1035,4 +1035,4 @@ const ccTldList = [
   'e164.arpa',
 ];
 
-export default ccTldList;
+module.exports = ccTldList;
